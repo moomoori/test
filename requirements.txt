@@ -1,0 +1,6 @@
+Plaintext
+
+numpy
+pandas
+streamlit
+openpyxl
