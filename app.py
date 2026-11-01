@@ -8,15 +8,19 @@ from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
 
 # ----------------------------------------------------------------------
-# 페이지 & 스타일 (에디토리얼 · 모노톤 · 얇은 선으로 영역 구분)
+# 페이지 & 스타일 (다크 모드 기본 · 얇은 선으로 영역 구분 · 높은 대비)
 # ----------------------------------------------------------------------
-st.set_page_config(page_title="Settlement Report", page_icon="▫️", layout="wide")
+st.set_page_config(page_title="Settlement Report", page_icon="▫️", layout="wide",
+                   initial_sidebar_state="expanded")
 
-INK = "#111111"        # 본문 텍스트 / 선
-MUTED = "#5C5C5C"      # 보조 텍스트 (배경과 충분한 대비)
-LINE = "#111111"       # 카드 테두리
-PAPER = "#FFFFFF"      # 배경
-TINT = "#F3F3F1"       # 보조 배경 (업로더 등)
+BG = "#0E0F12"          # 페이지 배경
+SURFACE = "#16181D"     # 카드 / 입력 영역
+LINE = "#3A3F4B"        # 구분선 (배경과 확실히 구분되는 밝기)
+TEXT = "#F5F5F5"        # 본문 텍스트 (대비 약 17:1)
+TEXT_SUB = "#B8BDC7"    # 보조 텍스트 (대비 약 9:1)
+ACCENT = "#F5F5F5"      # 강조 (흰색 반전)
+ACCENT_TEXT = "#0E0F12"
+SERIES_2 = "#8A8F9A"
 
 st.markdown(
     f"""
@@ -24,11 +28,12 @@ st.markdown(
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
-    html, body, [class*="css"], .stApp {{
+    html, body, [class*="css"], .stApp, .stMarkdown, p, li, label, span, div {{
         font-family: 'Pretendard', 'Noto Sans KR', -apple-system, 'Segoe UI', sans-serif;
-        color: {INK};
     }}
-    .stApp {{ background: {PAPER}; }}
+    .stApp {{ background: {BG}; color: {TEXT}; }}
+    .stApp p, .stApp li, .stApp label, .stApp span, .stApp h1, .stApp h2, .stApp h3,
+    .stApp h4, .stMarkdown {{ color: {TEXT}; }}
     .block-container {{ padding-top: 2rem; padding-bottom: 4rem; max-width: 1200px; }}
     header[data-testid="stHeader"] {{ background: transparent; }}
 
@@ -36,81 +41,97 @@ st.markdown(
     .topbar {{
         display: flex; justify-content: space-between; align-items: center;
         border-top: 1px solid {LINE}; border-bottom: 1px solid {LINE};
-        padding: 12px 4px; font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase;
+        padding: 12px 4px; font-size: 0.8rem; letter-spacing: 0.12em;
+        text-transform: uppercase; color: {TEXT_SUB};
     }}
     .brand {{ font-family: 'Playfair Display', 'Nanum Myeongjo', serif; font-size: 1.1rem;
-              letter-spacing: 0.2em; font-weight: 600; }}
+              letter-spacing: 0.2em; font-weight: 600; color: {TEXT}; }}
 
     /* 타이틀 */
     .hero {{ text-align: center; padding: 48px 0 40px 0; border-bottom: 1px solid {LINE};
              margin-bottom: 36px; }}
     .hero h1 {{ font-family: 'Playfair Display', 'Nanum Myeongjo', serif; font-weight: 400;
                 font-size: 2.6rem; letter-spacing: 0.08em; text-transform: uppercase;
-                margin: 0; color: {INK}; }}
-    .hero p {{ color: {MUTED}; margin: 14px 0 0 0; font-size: 0.95rem; }}
+                margin: 0; color: {TEXT}; }}
+    .hero p {{ color: {TEXT_SUB}; margin: 14px 0 0 0; font-size: 1rem; }}
 
     /* 섹션 라벨 */
     .section-label {{
-        font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase;
-        color: {INK}; font-weight: 700; margin: 36px 0 14px 0;
+        font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase;
+        color: {TEXT}; font-weight: 700; margin: 36px 0 14px 0;
         padding-bottom: 8px; border-bottom: 1px solid {LINE};
     }}
 
     /* 지표 카드 */
     .kpi {{
-        background: {PAPER}; border: 1px solid {LINE}; padding: 22px 22px 20px 22px;
+        background: {SURFACE}; border: 1px solid {LINE}; padding: 22px 22px 20px 22px;
         height: 100%; min-height: 136px;
     }}
-    .kpi-label {{ font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
-                  color: {MUTED}; font-weight: 600; }}
+    .kpi-label {{ font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase;
+                  color: {TEXT_SUB}; font-weight: 600; }}
     .kpi-value {{ font-family: 'Playfair Display', 'Nanum Myeongjo', serif; font-size: 2rem;
-                  color: {INK}; margin-top: 12px; line-height: 1.1; }}
-    .kpi-sub {{ font-size: 0.82rem; color: {MUTED}; margin-top: 10px; }}
-    .kpi-dark {{ background: {INK}; }}
-    .kpi-dark .kpi-label, .kpi-dark .kpi-sub {{ color: #D9D9D9; }}
-    .kpi-dark .kpi-value {{ color: #FFFFFF; }}
+                  color: {TEXT}; margin-top: 12px; line-height: 1.1; }}
+    .kpi-sub {{ font-size: 0.84rem; color: {TEXT_SUB}; margin-top: 10px; }}
+    .kpi-accent {{ background: {ACCENT}; border-color: {ACCENT}; }}
+    .kpi-accent .kpi-label, .kpi-accent .kpi-sub {{ color: #3A3F4B; }}
+    .kpi-accent .kpi-value {{ color: {ACCENT_TEXT}; }}
 
-    /* 일반 카드 (차트 / 다운로드 영역) */
-    .card {{ border: 1px solid {LINE}; padding: 22px 24px; background: {PAPER}; margin-bottom: 8px; }}
+    /* 카드 */
+    .card {{ border: 1px solid {LINE}; padding: 22px 24px; background: {SURFACE};
+             margin-bottom: 8px; }}
     .card-title {{ font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase;
-                   font-weight: 700; color: {INK}; margin-bottom: 12px; }}
+                   font-weight: 700; color: {TEXT}; margin-bottom: 12px; }}
 
     /* 업로더 */
     div[data-testid="stFileUploader"] section {{
-        background: {TINT}; border: 1px solid {LINE}; border-radius: 0;
+        background: {SURFACE}; border: 1px dashed {TEXT_SUB}; border-radius: 0;
     }}
-    div[data-testid="stFileUploader"] section:hover {{ background: #EAEAE6; }}
+    div[data-testid="stFileUploader"] section:hover {{ border-color: {TEXT}; }}
+    div[data-testid="stFileUploader"] small,
+    div[data-testid="stFileUploaderDropzoneInstructions"] span,
+    div[data-testid="stFileUploaderDropzoneInstructions"] small {{ color: {TEXT_SUB} !important; }}
     div[data-testid="stFileUploader"] button {{
-        border-radius: 0; border: 1px solid {INK}; background: {PAPER}; color: {INK};
+        border-radius: 0; border: 1px solid {TEXT}; background: transparent; color: {TEXT};
     }}
 
     /* 탭 */
-    button[data-baseweb="tab"] {{ font-weight: 600; letter-spacing: 0.04em; color: {MUTED}; }}
-    button[data-baseweb="tab"][aria-selected="true"] {{ color: {INK}; }}
-    div[data-baseweb="tab-highlight"] {{ background-color: {INK} !important; }}
+    button[data-baseweb="tab"] {{ font-weight: 600; letter-spacing: 0.04em;
+                                  color: {TEXT_SUB} !important; }}
+    button[data-baseweb="tab"][aria-selected="true"] {{ color: {TEXT} !important; }}
+    div[data-baseweb="tab-highlight"] {{ background-color: {TEXT} !important; }}
     div[data-baseweb="tab-border"] {{ background-color: {LINE} !important; }}
 
-    /* 버튼 (각진 모노톤) */
+    /* 버튼 */
     [data-testid="stDownloadButton"] button, .stButton > button {{
         border-radius: 0; font-weight: 700; letter-spacing: 0.06em;
-        background: {INK}; color: #FFFFFF; border: 1px solid {INK}; padding: 0.7rem 1.4rem;
+        background: {TEXT}; color: {BG} !important; border: 1px solid {TEXT};
+        padding: 0.7rem 1.4rem;
     }}
-    [data-testid="stDownloadButton"] button:hover {{ background: #333333; border-color: #333333; }}
+    [data-testid="stDownloadButton"] button:hover {{ background: #D6D6D6; border-color: #D6D6D6; }}
 
     /* 사이드바 */
-    section[data-testid="stSidebar"] {{ background: {PAPER}; border-right: 1px solid {LINE}; }}
+    section[data-testid="stSidebar"] {{ background: {SURFACE}; border-right: 1px solid {LINE}; }}
     section[data-testid="stSidebar"] h3 {{
-        font-family: 'Playfair Display', 'Nanum Myeongjo', serif; font-weight: 600;
+        font-family: 'Playfair Display', 'Nanum Myeongjo', serif; font-weight: 600; color: {TEXT};
+    }}
+    section[data-testid="stSidebar"] .stCaptionContainer, .stCaption, [data-testid="stCaptionContainer"] {{
+        color: {TEXT_SUB} !important;
     }}
 
-    /* 데이터프레임 테두리 */
+    /* 데이터프레임 */
     div[data-testid="stDataFrame"] {{ border: 1px solid {LINE}; }}
 
+    /* 안내 메시지 */
+    div[data-testid="stAlert"] {{ border-radius: 0; border: 1px solid {LINE}; }}
+
     /* 빈 상태 */
-    .empty {{ border: 1px solid {LINE}; padding: 64px 24px; text-align: center; }}
+    .empty {{ border: 1px solid {LINE}; padding: 64px 24px; text-align: center;
+              background: {SURFACE}; }}
+    .empty-eyebrow {{ font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase;
+                      color: {TEXT_SUB}; }}
     .empty-title {{ font-family: 'Playfair Display', 'Nanum Myeongjo', serif; font-size: 1.6rem;
-                    margin-top: 10px; }}
-    .empty-desc {{ color: {MUTED}; margin-top: 10px; font-size: 0.92rem; line-height: 1.7; }}
+                    margin-top: 10px; color: {TEXT}; }}
+    .empty-desc {{ color: {TEXT_SUB}; margin-top: 10px; font-size: 0.95rem; line-height: 1.7; }}
     </style>
     """,
     unsafe_allow_html=True,
@@ -321,9 +342,9 @@ def make_totals(detail: pd.DataFrame) -> dict:
 
 
 # ----------------------------------------------------------------------
-# 엑셀 생성
+# 엑셀 생성 (화면은 다크지만 엑셀은 인쇄/열람용 밝은 스타일)
 # ----------------------------------------------------------------------
-HEADER_FILL = PatternFill("solid", fgColor=INK.lstrip("#"))
+HEADER_FILL = PatternFill("solid", fgColor="111111")
 HEADER_FONT = Font(bold=True, color="FFFFFF")
 
 
@@ -359,8 +380,8 @@ def build_excel(detail, summary, totals) -> bytes:
 # ----------------------------------------------------------------------
 # UI 컴포넌트
 # ----------------------------------------------------------------------
-def kpi(label: str, value: str, sub: str = "", dark: bool = False) -> str:
-    cls = "kpi kpi-dark" if dark else "kpi"
+def kpi(label: str, value: str, sub: str = "", accent: bool = False) -> str:
+    cls = "kpi kpi-accent" if accent else "kpi"
     sub_html = f'<div class="kpi-sub">{sub}</div>' if sub else ""
     return (f'<div class="{cls}"><div class="kpi-label">{label}</div>'
             f'<div class="kpi-value">{value}</div>{sub_html}</div>')
@@ -414,10 +435,9 @@ elif uploaded:
     source_files = uploaded
 else:
     st.markdown(
-        """
+        f"""
         <div class="empty">
-            <div style="font-size:0.75rem; letter-spacing:0.18em; text-transform:uppercase;
-                        color:#5C5C5C;">Upload</div>
+            <div class="empty-eyebrow">Upload</div>
             <div class="empty-title">정산 파일을 끌어다 놓으세요</div>
             <div class="empty-desc">
                 CSV, XLSX 여러 개를 한 번에 올릴 수 있습니다.<br>
@@ -452,7 +472,7 @@ cols[0].markdown(kpi("총 매출", f"{totals['총매출']:,.0f}원",
 cols[1].markdown(kpi("총 비용", f"{totals['총비용']:,.0f}원",
                      "수수료 · 배송 · 기타 · 원가"), unsafe_allow_html=True)
 cols[2].markdown(kpi("순수익", f"{totals['순이익']:,.0f}원",
-                     "매출 − 전체 비용", dark=True), unsafe_allow_html=True)
+                     "매출 − 전체 비용", accent=True), unsafe_allow_html=True)
 cols[3].markdown(kpi("마진율", f"{totals['마진율(%)']:.2f}%", "순이익 ÷ 매출"),
                  unsafe_allow_html=True)
 
@@ -464,10 +484,10 @@ left, right = st.columns([3, 2])
 with left:
     st.markdown('<div class="card-title">매출 · 순이익</div>', unsafe_allow_html=True)
     st.bar_chart(summary.set_index("플랫폼")[["매출액", "순이익"]],
-                 color=[INK, "#B5B5B5"], height=300)
+                 color=[TEXT, SERIES_2], height=300)
 with right:
     st.markdown('<div class="card-title">마진율 (%)</div>', unsafe_allow_html=True)
-    st.bar_chart(summary.set_index("플랫폼")[["마진율(%)"]], color=[INK], height=300)
+    st.bar_chart(summary.set_index("플랫폼")[["마진율(%)"]], color=[TEXT], height=300)
 
 # ----------------------------------------------------------------------
 # 상세 테이블
@@ -498,8 +518,10 @@ with tab3:
 # 다운로드
 # ----------------------------------------------------------------------
 section("Export")
-st.markdown('<div class="card"><div class="card-title">보고서 다운로드</div>', unsafe_allow_html=True)
-st.caption("종합요약 · 플랫폼별요약 · 마진계산내역 3개 시트로 구성된 엑셀 파일입니다.")
+st.markdown(f'<div class="card"><div class="card-title">보고서 다운로드</div>'
+            f'<div style="color:{TEXT_SUB}; font-size:0.9rem; margin-bottom:14px;">'
+            f'종합요약 · 플랫폼별요약 · 마진계산내역 3개 시트로 구성된 엑셀 파일입니다.</div>',
+            unsafe_allow_html=True)
 st.download_button(
     label="엑셀 보고서 다운로드 (.xlsx)",
     data=build_excel(detail, summary, totals),
