@@ -1,5 +1,6 @@
 import io
 import re
+from difflib import SequenceMatcher
 
 import numpy as np
 import pandas as pd
@@ -8,17 +9,17 @@ from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
 
 # ----------------------------------------------------------------------
-# 페이지 & 스타일 (다크 모드 기본 · 얇은 선으로 영역 구분 · 높은 대비)
+# 페이지 & 스타일 (다크 모드 기본 · 얇은 선 구분 · 높은 대비)
 # ----------------------------------------------------------------------
 st.set_page_config(page_title="Settlement Report", page_icon="▫️", layout="wide",
                    initial_sidebar_state="expanded")
 
-BG = "#0E0F12"          # 페이지 배경
-SURFACE = "#16181D"     # 카드 / 입력 영역
-LINE = "#3A3F4B"        # 구분선 (배경과 확실히 구분되는 밝기)
-TEXT = "#F5F5F5"        # 본문 텍스트 (대비 약 17:1)
-TEXT_SUB = "#B8BDC7"    # 보조 텍스트 (대비 약 9:1)
-ACCENT = "#F5F5F5"      # 강조 (흰색 반전)
+BG = "#0E0F12"
+SURFACE = "#16181D"
+LINE = "#3A3F4B"
+TEXT = "#F5F5F5"
+TEXT_SUB = "#B8BDC7"
+ACCENT = "#F5F5F5"
 ACCENT_TEXT = "#0E0F12"
 SERIES_2 = "#8A8F9A"
 
@@ -37,7 +38,6 @@ st.markdown(
     .block-container {{ padding-top: 2rem; padding-bottom: 4rem; max-width: 1200px; }}
     header[data-testid="stHeader"] {{ background: transparent; }}
 
-    /* 상단 바 */
     .topbar {{
         display: flex; justify-content: space-between; align-items: center;
         border-top: 1px solid {LINE}; border-bottom: 1px solid {LINE};
@@ -47,7 +47,6 @@ st.markdown(
     .brand {{ font-family: 'Playfair Display', 'Nanum Myeongjo', serif; font-size: 1.1rem;
               letter-spacing: 0.2em; font-weight: 600; color: {TEXT}; }}
 
-    /* 타이틀 */
     .hero {{ text-align: center; padding: 48px 0 40px 0; border-bottom: 1px solid {LINE};
              margin-bottom: 36px; }}
     .hero h1 {{ font-family: 'Playfair Display', 'Nanum Myeongjo', serif; font-weight: 400;
@@ -55,14 +54,12 @@ st.markdown(
                 margin: 0; color: {TEXT}; }}
     .hero p {{ color: {TEXT_SUB}; margin: 14px 0 0 0; font-size: 1rem; }}
 
-    /* 섹션 라벨 */
     .section-label {{
         font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase;
         color: {TEXT}; font-weight: 700; margin: 36px 0 14px 0;
         padding-bottom: 8px; border-bottom: 1px solid {LINE};
     }}
 
-    /* 지표 카드 */
     .kpi {{
         background: {SURFACE}; border: 1px solid {LINE}; padding: 22px 22px 20px 22px;
         height: 100%; min-height: 136px;
@@ -76,13 +73,11 @@ st.markdown(
     .kpi-accent .kpi-label, .kpi-accent .kpi-sub {{ color: #3A3F4B; }}
     .kpi-accent .kpi-value {{ color: {ACCENT_TEXT}; }}
 
-    /* 카드 */
     .card {{ border: 1px solid {LINE}; padding: 22px 24px; background: {SURFACE};
              margin-bottom: 8px; }}
     .card-title {{ font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase;
                    font-weight: 700; color: {TEXT}; margin-bottom: 12px; }}
 
-    /* 업로더 */
     div[data-testid="stFileUploader"] section {{
         background: {SURFACE}; border: 1px dashed {TEXT_SUB}; border-radius: 0;
     }}
@@ -94,14 +89,12 @@ st.markdown(
         border-radius: 0; border: 1px solid {TEXT}; background: transparent; color: {TEXT};
     }}
 
-    /* 탭 */
     button[data-baseweb="tab"] {{ font-weight: 600; letter-spacing: 0.04em;
                                   color: {TEXT_SUB} !important; }}
     button[data-baseweb="tab"][aria-selected="true"] {{ color: {TEXT} !important; }}
     div[data-baseweb="tab-highlight"] {{ background-color: {TEXT} !important; }}
     div[data-baseweb="tab-border"] {{ background-color: {LINE} !important; }}
 
-    /* 버튼 */
     [data-testid="stDownloadButton"] button, .stButton > button {{
         border-radius: 0; font-weight: 700; letter-spacing: 0.06em;
         background: {TEXT}; color: {BG} !important; border: 1px solid {TEXT};
@@ -109,22 +102,15 @@ st.markdown(
     }}
     [data-testid="stDownloadButton"] button:hover {{ background: #D6D6D6; border-color: #D6D6D6; }}
 
-    /* 사이드바 */
     section[data-testid="stSidebar"] {{ background: {SURFACE}; border-right: 1px solid {LINE}; }}
     section[data-testid="stSidebar"] h3 {{
         font-family: 'Playfair Display', 'Nanum Myeongjo', serif; font-weight: 600; color: {TEXT};
     }}
-    section[data-testid="stSidebar"] .stCaptionContainer, .stCaption, [data-testid="stCaptionContainer"] {{
-        color: {TEXT_SUB} !important;
-    }}
+    [data-testid="stCaptionContainer"], .stCaption {{ color: {TEXT_SUB} !important; }}
 
-    /* 데이터프레임 */
     div[data-testid="stDataFrame"] {{ border: 1px solid {LINE}; }}
-
-    /* 안내 메시지 */
     div[data-testid="stAlert"] {{ border-radius: 0; border: 1px solid {LINE}; }}
 
-    /* 빈 상태 */
     .empty {{ border: 1px solid {LINE}; padding: 64px 24px; text-align: center;
               background: {SURFACE}; }}
     .empty-eyebrow {{ font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase;
@@ -145,7 +131,8 @@ COLUMN_ALIASES = {
     "date": ["정산일", "정산기준일", "주문일", "주문일자", "결제일", "날짜", "판매일", "date", "orderdate"],
     "product": ["상품명", "상품", "품목명", "제품명", "품목", "product", "productname", "item"],
     "quantity": ["수량", "주문수량", "판매수량", "qty", "quantity"],
-    "sales": ["매출액", "총매출", "매출", "판매금액", "결제금액", "상품금액", "판매가",
+    "sales": ["매출액", "총매출", "매출", "매출금액", "판매금액", "판매가", "판매가격",
+              "결제금액", "결제가", "총결제금액", "주문금액", "구매금액", "상품금액",
               "정산대상금액", "sales", "revenue", "amount"],
     "commission": ["수수료", "판매수수료", "서비스이용료", "중개수수료", "수수료합계",
                    "판매자수수료", "commission", "fee"],
@@ -153,6 +140,23 @@ COLUMN_ALIASES = {
     "other": ["기타비용", "기타수수료", "광고비", "포장비", "기타", "other", "adcost"],
     "cost": ["원가", "매입원가", "매입가", "공급가", "cost", "purchasecost"],
 }
+
+NEGATIVE_WORDS = {
+    "sales": ["원가", "수수료", "배송", "순이익", "이익", "율", "비율"],
+    "commission": ["순이익", "율", "비율"],
+    "shipping": ["율", "비율"],
+    "other": ["율", "비율"],
+    "cost": ["율", "비율"],
+}
+
+MATCH_THRESHOLD = 0.7
+
+STANDARD_LABEL = {
+    "platform": "플랫폼", "date": "정산일", "product": "상품명", "quantity": "수량",
+    "sales": "매출액", "commission": "수수료", "shipping": "배송비",
+    "other": "기타비용", "cost": "원가",
+}
+
 EXCLUDE_KEYWORDS = ["합계", "소계", "총계", "total", "sum"]
 DETAIL_COLS = ["플랫폼", "정산일", "상품명", "수량", "매출액", "수수료", "배송비",
                "기타비용", "원가", "순이익", "마진율(%)", "원본파일"]
@@ -234,21 +238,53 @@ def make_sample_files(seed: int = 42):
 
 
 # ----------------------------------------------------------------------
-# 파싱 / 매핑 / 계산
+# 정규화 · 매핑
 # ----------------------------------------------------------------------
 def normalize(text) -> str:
-    return re.sub(r"[\s_\-()/]", "", str(text)).lower()
+    s = str(text)
+    s = re.sub(r"\(.*?\)|\[.*?\]|<.*?>", "", s)
+    s = re.sub(r"[\s_\-/·:.,]", "", s)
+    return s.lower()
 
 
-def map_columns(df: pd.DataFrame) -> dict:
-    norm_cols = {normalize(c): c for c in df.columns}
-    mapping = {}
-    for key, aliases in COLUMN_ALIASES.items():
-        for alias in aliases:
-            if normalize(alias) in norm_cols:
-                mapping[key] = norm_cols[normalize(alias)]
-                break
-    return mapping
+def score_column(col_norm: str, alias_norm: str) -> float:
+    if not col_norm or not alias_norm:
+        return 0.0
+    if col_norm == alias_norm:
+        return 1.0
+    shorter, longer = sorted([col_norm, alias_norm], key=len)
+    if len(shorter) >= 2 and shorter in longer:
+        return 0.7 + 0.25 * len(shorter) / len(longer)
+    ratio = SequenceMatcher(None, col_norm, alias_norm).ratio()
+    return ratio if ratio >= 0.8 else 0.0
+
+
+def is_negative(key: str, col_norm: str) -> bool:
+    return any(w in col_norm for w in NEGATIVE_WORDS.get(key, []))
+
+
+def map_columns(df: pd.DataFrame):
+    candidates = []
+    for col in df.columns:
+        cn = normalize(col)
+        if not cn or cn.startswith("unnamed"):
+            continue
+        for key, aliases in COLUMN_ALIASES.items():
+            if is_negative(key, cn):
+                continue
+            best = max(score_column(cn, normalize(a)) for a in aliases)
+            if best >= MATCH_THRESHOLD:
+                candidates.append((best, key, col))
+
+    candidates.sort(key=lambda x: x[0], reverse=True)
+    mapping, info, used_cols = {}, {}, set()
+    for score, key, col in candidates:
+        if key in mapping or col in used_cols:
+            continue
+        mapping[key] = col
+        info[key] = (col, score)
+        used_cols.add(col)
+    return mapping, info
 
 
 def read_raw(raw: bytes, name: str, header: int) -> pd.DataFrame:
@@ -270,10 +306,10 @@ def load_settlement(raw: bytes, name: str):
             df = read_raw(raw, name, header)
         except Exception:
             continue
-        mapping = map_columns(df)
+        mapping, info = map_columns(df)
         if "sales" in mapping:
-            return df, mapping
-    raise ValueError("'매출액'에 해당하는 컬럼을 찾지 못했습니다.")
+            return df, mapping, info
+    raise ValueError("'매출액'(판매가·결제금액 등 포함)에 해당하는 컬럼을 찾지 못했습니다.")
 
 
 def to_number(series: pd.Series) -> pd.Series:
@@ -283,14 +319,21 @@ def to_number(series: pd.Series) -> pd.Series:
     return pd.to_numeric(s, errors="coerce").fillna(0.0)
 
 
+# ----------------------------------------------------------------------
+# 계산
+# ----------------------------------------------------------------------
 def process_files(files, default_cost_rate: float):
-    frames, errors = [], []
+    frames, errors, logs = [], [], []
     for f in files:
         try:
-            df, m = load_settlement(f.getvalue(), f.name)
+            df, m, info = load_settlement(f.getvalue(), f.name)
         except Exception as e:
             errors.append((f.name, str(e)))
             continue
+
+        for key, (col, score) in info.items():
+            logs.append({"파일": f.name, "표준항목": STANDARD_LABEL.get(key, key),
+                         "인식된 컬럼": col, "일치도": f"{score:.0%}"})
 
         stem = f.name.rsplit(".", 1)[0]
         out = pd.DataFrame(index=df.index)
@@ -316,7 +359,7 @@ def process_files(files, default_cost_rate: float):
         frames.append(out)
 
     detail = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=DETAIL_COLS)
-    return detail, errors
+    return detail, errors, pd.DataFrame(logs)
 
 
 def make_summary(detail: pd.DataFrame) -> pd.DataFrame:
@@ -342,7 +385,7 @@ def make_totals(detail: pd.DataFrame) -> dict:
 
 
 # ----------------------------------------------------------------------
-# 엑셀 생성 (화면은 다크지만 엑셀은 인쇄/열람용 밝은 스타일)
+# 엑셀 생성 (다운로드용은 밝은 인쇄 스타일)
 # ----------------------------------------------------------------------
 HEADER_FILL = PatternFill("solid", fgColor="111111")
 HEADER_FONT = Font(bold=True, color="FFFFFF")
@@ -435,7 +478,7 @@ elif uploaded:
     source_files = uploaded
 else:
     st.markdown(
-        f"""
+        """
         <div class="empty">
             <div class="empty-eyebrow">Upload</div>
             <div class="empty-title">정산 파일을 끌어다 놓으세요</div>
@@ -450,10 +493,15 @@ else:
     st.stop()
 
 with st.spinner("정산 데이터를 분석하는 중..."):
-    detail, errors = process_files(source_files, cost_rate)
+    detail, errors, mapping_log = process_files(source_files, cost_rate)
 
 for name, msg in errors:
     st.error(f"{name} 처리 실패: {msg}")
+
+if not mapping_log.empty:
+    with st.expander("컬럼 자동 인식 결과 확인", expanded=False):
+        st.caption("인식이 잘못된 항목이 있으면 COLUMN_ALIASES에 해당 컬럼명을 추가하세요.")
+        st.dataframe(mapping_log, hide_index=True)
 
 if detail.empty:
     st.warning("처리 가능한 데이터가 없습니다. 매출액 컬럼이 포함되어 있는지 확인해 주세요.")
