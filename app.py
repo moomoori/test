@@ -26,65 +26,54 @@ C_PROFIT = "#3B82F6"
 C_BAD = "#EF4444"
 COST_COLORS = {"수수료": "#F59E0B", "배송비": "#8B5CF6", "기타비용": "#EC4899", "원가": "#6B7280"}
 
-st.markdown(
-    f"""
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
-    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-    html, body, [class*="css"], .stApp {{
-        font-family: 'Pretendard', 'Noto Sans KR', -apple-system, 'Segoe UI', sans-serif;
-    }}
-    .stApp {{ background: {BG}; color: {TEXT}; }}
-    .block-container {{ padding-top: 2rem; padding-bottom: 4rem; max-width: 1240px; }}
-    header[data-testid="stHeader"] {{ background: transparent; }}
-    .topbar {{ display:flex; justify-content:space-between; border-top:1px solid {LINE};
-              border-bottom:1px solid {LINE}; padding:12px 4px; font-size:0.8rem;
-              letter-spacing:0.12em; text-transform:uppercase; color:{TEXT_SUB}; }}
-    .brand {{ font-family:'Playfair Display','Nanum Myeongjo',serif; font-size:1.1rem;
-             letter-spacing:0.2em; font-weight:600; color:{TEXT}; }}
-    .hero {{ text-align:center; padding:44px 0 36px 0; border-bottom:1px solid {LINE};
-            margin-bottom:28px; }}
-    .hero h1 {{ font-family:'Playfair Display','Nanum Myeongjo',serif; font-weight:400;
-               font-size:2.5rem; letter-spacing:0.08em; text-transform:uppercase;
-               margin:0; color:{TEXT}; }}
-    .hero p {{ color:{TEXT_SUB}; margin:14px 0 0 0; }}
-    .section-label {{ font-size:0.78rem; letter-spacing:0.18em; text-transform:uppercase;
-                     color:{TEXT}; font-weight:700; margin:40px 0 16px 0;
-                     padding-bottom:8px; border-bottom:1px solid {LINE}; }}
-    .kpi {{ background:{SURFACE}; border:1px solid {LINE}; padding:20px 22px; min-height:128px; }}
-    .kpi-label {{ font-size:0.74rem; letter-spacing:0.14em; text-transform:uppercase;
-                 color:{TEXT_SUB}; font-weight:600; }}
-    .kpi-value {{ font-family:'Playfair Display','Nanum Myeongjo',serif; font-size:1.9rem;
-                 color:{TEXT}; margin-top:10px; line-height:1.1; }}
-    .kpi-sub {{ font-size:0.84rem; color:{TEXT_SUB}; margin-top:10px; }}
-    .kpi-accent {{ background:{TEXT}; border-color:{TEXT}; }}
-    .kpi-accent .kpi-label, .kpi-accent .kpi-sub {{ color:#3A3F4B; }}
-    .kpi-accent .kpi-value {{ color:{BG}; }}
-    .card-title {{ font-size:0.8rem; letter-spacing:0.14em; text-transform:uppercase;
-                  font-weight:700; color:{TEXT}; margin:18px 0 8px 0; }}
-    .insight {{ background:{SURFACE}; border:1px solid {LINE}; border-left:3px solid {TEXT};
-               padding:16px 20px; margin-bottom:10px; }}
-    .insight-title {{ font-weight:700; color:{TEXT}; margin-bottom:6px; }}
-    .insight-text {{ color:{TEXT_SUB}; line-height:1.7; }}
-    div[data-testid="stFileUploader"] section {{ background:{SURFACE}; border:1px dashed {TEXT_SUB};
-                                               border-radius:0; }}
-    button[data-baseweb="tab"] {{ font-weight:600; color:{TEXT_SUB} !important; }}
-    button[data-baseweb="tab"][aria-selected="true"] {{ color:{TEXT} !important; }}
-    div[data-baseweb="tab-highlight"] {{ background-color:{TEXT} !important; }}
-    div[data-baseweb="tab-border"] {{ background-color:{LINE} !important; }}
-    [data-testid="stDownloadButton"] button, .stButton > button {{
-        border-radius:0; font-weight:700; background:{TEXT}; color:{BG} !important;
-        border:1px solid {TEXT}; padding:0.7rem 1.4rem; }}
-    section[data-testid="stSidebar"] {{ background:{SURFACE}; border-right:1px solid {LINE}; }}
-    div[data-testid="stDataFrame"] {{ border:1px solid {LINE}; }}
-    .empty {{ border:1px solid {LINE}; padding:64px 24px; text-align:center; background:{SURFACE}; }}
-    .empty-title {{ font-family:'Playfair Display','Nanum Myeongjo',serif; font-size:1.6rem;
-                   margin-top:10px; color:{TEXT}; }}
-    .empty-desc {{ color:{TEXT_SUB}; margin-top:10px; line-height:1.7; }}
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
+CSS = """
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+html, body, [class*="css"], .stApp { font-family: 'Pretendard','Noto Sans KR',-apple-system,'Segoe UI',sans-serif; }
+.stApp { background: __BG__; color: __TEXT__; }
+.block-container { padding-top: 2rem; padding-bottom: 4rem; max-width: 1240px; }
+header[data-testid="stHeader"] { background: transparent; }
+.topbar { display:flex; justify-content:space-between; border-top:1px solid __LINE__;
+          border-bottom:1px solid __LINE__; padding:12px 4px; font-size:0.8rem;
+          letter-spacing:0.12em; text-transform:uppercase; color:__TEXT_SUB__; }
+.brand { font-family:'Playfair Display','Nanum Myeongjo',serif; font-size:1.1rem;
+         letter-spacing:0.2em; font-weight:600; color:__TEXT__; }
+.hero { text-align:center; padding:44px 0 36px 0; border-bottom:1px solid __LINE__; margin-bottom:28px; }
+.hero h1 { font-family:'Playfair Display','Nanum Myeongjo',serif; font-weight:400; font-size:2.5rem;
+           letter-spacing:0.08em; text-transform:uppercase; margin:0; color:__TEXT__; }
+.hero p { color:__TEXT_SUB__; margin:14px 0 0 0; }
+.section-label { font-size:0.78rem; letter-spacing:0.18em; text-transform:uppercase; color:__TEXT__;
+                 font-weight:700; margin:40px 0 16px 0; padding-bottom:8px; border-bottom:1px solid __LINE__; }
+.kpi { background:__SURFACE__; border:1px solid __LINE__; padding:20px 22px; min-height:128px; }
+.kpi-label { font-size:0.74rem; letter-spacing:0.14em; text-transform:uppercase; color:__TEXT_SUB__; font-weight:600; }
+.kpi-value { font-family:'Playfair Display','Nanum Myeongjo',serif; font-size:1.9rem; color:__TEXT__; margin-top:10px; line-height:1.1; }
+.kpi-sub { font-size:0.84rem; color:__TEXT_SUB__; margin-top:10px; }
+.kpi-accent { background:__TEXT__; border-color:__TEXT__; }
+.kpi-accent .kpi-label, .kpi-accent .kpi-sub { color:#3A3F4B; }
+.kpi-accent .kpi-value { color:__BG__; }
+.card-title { font-size:0.8rem; letter-spacing:0.14em; text-transform:uppercase; font-weight:700; color:__TEXT__; margin:18px 0 8px 0; }
+.insight { background:__SURFACE__; border:1px solid __LINE__; border-left:3px solid __TEXT__; padding:16px 20px; margin-bottom:10px; }
+.insight-title { font-weight:700; color:__TEXT__; margin-bottom:6px; }
+.insight-text { color:__TEXT_SUB__; line-height:1.7; }
+.alert-warn { border-left-color:__BAD__ !important; }
+div[data-testid="stFileUploader"] section { background:__SURFACE__; border:1px dashed __TEXT_SUB__; border-radius:0; }
+button[data-baseweb="tab"] { font-weight:600; color:__TEXT_SUB__ !important; }
+button[data-baseweb="tab"][aria-selected="true"] { color:__TEXT__ !important; }
+div[data-baseweb="tab-highlight"] { background-color:__TEXT__ !important; }
+div[data-baseweb="tab-border"] { background-color:__LINE__ !important; }
+[data-testid="stDownloadButton"] button, .stButton > button { border-radius:0; font-weight:700; background:__TEXT__;
+        color:__BG__ !important; border:1px solid __TEXT__; padding:0.7rem 1.4rem; }
+section[data-testid="stSidebar"] { background:__SURFACE__; border-right:1px solid __LINE__; }
+div[data-testid="stDataFrame"] { border:1px solid __LINE__; }
+.empty { border:1px solid __LINE__; padding:64px 24px; text-align:center; background:__SURFACE__; }
+.empty-title { font-family:'Playfair Display','Nanum Myeongjo',serif; font-size:1.6rem; margin-top:10px; color:__TEXT__; }
+.empty-desc { color:__TEXT_SUB__; margin-top:10px; line-height:1.7; }
+</style>
+"""
+CSS = (CSS.replace("__BG__", BG).replace("__SURFACE__", SURFACE).replace("__LINE__", LINE)
+          .replace("__TEXT_SUB__", TEXT_SUB).replace("__TEXT__", TEXT).replace("__BAD__", C_BAD))
+st.markdown(CSS, unsafe_allow_html=True)
 
 # ----------------------------------------------------------------------
 # 컬럼 매핑 설정
@@ -356,7 +345,39 @@ def to_month(series: pd.Series) -> pd.Series:
     return dt.dt.strftime("%Y-%m").fillna("미상")
 
 
-def build_frame(p: dict, m: dict, cost_rate: float) -> pd.DataFrame:
+# ----------------------------------------------------------------------
+# 원가표 (상품별 개당 원가)
+# ----------------------------------------------------------------------
+def table_to_map(df: pd.DataFrame) -> dict:
+    out = {}
+    if df is None or df.empty or "상품명" not in df.columns or "개당원가" not in df.columns:
+        return out
+    for _, r in df.iterrows():
+        name = str(r["상품명"]).strip() if pd.notna(r["상품명"]) else ""
+        try:
+            v = float(r["개당원가"])
+        except (TypeError, ValueError):
+            continue
+        if name and name.lower() != "nan" and not np.isnan(v):
+            out[name] = v
+    return out
+
+
+def parse_cost_csv(raw: bytes) -> dict:
+    df = None
+    for enc in ("utf-8-sig", "cp949"):
+        try:
+            df = pd.read_csv(io.BytesIO(raw), dtype=str, encoding=enc)
+            break
+        except UnicodeDecodeError:
+            continue
+    if df is None or not {"상품명", "개당원가"} <= set(df.columns):
+        return {}
+    df["개당원가"] = to_number(df["개당원가"])
+    return table_to_map(df)
+
+
+def build_frame(p: dict, m: dict, cost_rate: float, cost_map: dict) -> pd.DataFrame:
     df = p["df"]
     idx = df.index
 
@@ -375,7 +396,13 @@ def build_frame(p: dict, m: dict, cost_rate: float) -> pd.DataFrame:
     out["수수료"] = num("commission")
     out["배송비"] = num("shipping")
     out["기타비용"] = num("other")
-    out["원가"] = num("cost") if "cost" in m else out["매출액"] * cost_rate / 100
+
+    if "cost" in m:
+        out["원가"] = num("cost")
+    else:
+        unit = out["상품명"].map(lambda x: cost_map.get(str(x).strip(), np.nan)).astype(float)
+        qty = out["수량"].where(out["수량"] > 0, 1.0)
+        out["원가"] = np.where(unit.notna(), unit.fillna(0) * qty, out["매출액"] * cost_rate / 100)
 
     cells = out[["플랫폼", "정산일", "상품명"]].astype(str).apply(
         lambda c: c.str.strip().str.lower().str.match(TOTAL_RE))
@@ -388,7 +415,7 @@ def build_frame(p: dict, m: dict, cost_rate: float) -> pd.DataFrame:
     return out
 
 
-def process_all(parsed: list, overrides: dict, cost_rate: float):
+def process_all(parsed: list, overrides: dict, cost_rate: float, cost_map: dict):
     frames, errors, logs = [], [], []
     for p in parsed:
         if p.get("error"):
@@ -396,7 +423,7 @@ def process_all(parsed: list, overrides: dict, cost_rate: float):
             continue
         m = overrides.get(p["name"], p["mapping"])
         if "sales" not in m:
-            errors.append((p["name"], "매출액 컬럼이 지정되지 않았습니다. 아래 매핑에서 선택해 주세요."))
+            errors.append((p["name"], "매출액 컬럼이 지정되지 않았습니다. 매핑에서 선택해 주세요."))
             continue
         for key in FIELD_ORDER:
             if key in m:
@@ -405,7 +432,7 @@ def process_all(parsed: list, overrides: dict, cost_rate: float):
                     method = "값 기반 추정"
                 logs.append({"파일": p["name"], "표준항목": STANDARD_LABEL[key],
                              "인식된 컬럼": m[key], "방식": method})
-        frames.append(build_frame(p, m, cost_rate))
+        frames.append(build_frame(p, m, cost_rate, cost_map))
     detail = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame(columns=DETAIL_COLS)
     return detail, errors, pd.DataFrame(logs)
 
@@ -470,18 +497,95 @@ def make_monthly(detail: pd.DataFrame) -> pd.DataFrame:
     return g.round(2).sort_values(["정산월", "플랫폼"]).reset_index(drop=True)
 
 
+def make_breakeven(prod: pd.DataFrame, fixed_cost: float, target_profit: float) -> pd.DataFrame:
+    """개당 공헌이익 = 상품 순이익 / 수량 (원가·수수료·배송·기타 차감 후 값)."""
+    if prod.empty:
+        return pd.DataFrame()
+    g = prod.copy()
+    g["개당공헌이익"] = safe_div(g["순이익"], g["수량"].replace(0, np.nan))
+    g["개당평균매출"] = safe_div(g["매출액"], g["수량"].replace(0, np.nan))
+    def need(target):
+        return np.where(g["개당공헌이익"] > 0, np.ceil(target / g["개당공헌이익"].replace(0, np.nan)), np.nan)
+    g["손익분기수량"] = need(fixed_cost)
+    g["목표달성수량"] = need(fixed_cost + target_profit)
+    cols = ["플랫폼", "상품명", "수량", "개당평균매출", "개당공헌이익", "손익분기수량", "목표달성수량"]
+    return g[cols].sort_values("개당공헌이익", ascending=False).reset_index(drop=True).round(0).astype(
+        {"수량": "float"}, errors="ignore")
+
+
+def compare_periods(detail: pd.DataFrame, a: str, b: str) -> pd.DataFrame:
+    rows = []
+    for label, month in [("A", a), ("B", b)]:
+        d = detail[detail["정산월"] == month]
+        t = make_totals(d) if not d.empty else {"총매출": 0, "순이익": 0, "마진율(%)": 0, "주문건수": 0}
+        rows.append((month, t))
+    (ma, ta), (mb, tb) = rows
+    items = [("주문건수", "주문건수", "건"), ("총매출", "총매출", "원"),
+             ("순이익", "순이익", "원"), ("마진율(%)", "마진율(%)", "%p")]
+    out = []
+    for label, key, unit in items:
+        va, vb = float(ta[key]), float(tb[key])
+        out.append({"지표": label, ma: va, mb: vb, "증감": vb - va,
+                    "증감률(%)": round((vb - va) / va * 100, 2) if va else 0.0, "단위": unit})
+    return pd.DataFrame(out)
+
+
+def detect_anomalies(dv: pd.DataFrame, plat: pd.DataFrame, prod: pd.DataFrame, monthly: pd.DataFrame):
+    alerts = []
+    if not monthly.empty:
+        for pf, g in monthly.groupby("플랫폼"):
+            g = g.sort_values("정산월")
+            if len(g) >= 2:
+                last, prev = g.iloc[-1], g.iloc[-2]
+                dm = last["마진율(%)"] - prev["마진율(%)"]
+                if dm <= -5:
+                    alerts.append(("경고", f"{pf} 마진율 급락",
+                                   f"{prev['정산월']} {prev['마진율(%)']:.2f}% → {last['정산월']} {last['마진율(%)']:.2f}% ({dm:+.2f}%p)"))
+                if prev["매출액"] > 0:
+                    ds = (last["매출액"] - prev["매출액"]) / prev["매출액"] * 100
+                    if ds <= -50:
+                        alerts.append(("경고", f"{pf} 매출 급감",
+                                       f"직전월 대비 {ds:.1f}% 감소 ({last['정산월']})"))
+    if not plat.empty:
+        overall = float(plat["수수료"].sum() / plat["매출액"].sum() * 100) if plat["매출액"].sum() else 0
+        for _, r in plat.iterrows():
+            if r["수수료율(%)"] > overall + 5:
+                alerts.append(("주의", f"{r['플랫폼']} 수수료율 과다",
+                               f"{r['수수료율(%)']:.2f}% (전체 평균 {overall:.2f}%)"))
+    if not prod.empty:
+        loss = prod[prod["순이익"] < 0]
+        if not loss.empty:
+            alerts.append(("주의", f"적자 상품 {len(loss)}개",
+                           ", ".join(loss["상품명"].head(5).tolist())))
+    if not dv.empty:
+        no_cost = dv[dv["원가"] == 0]
+        if len(no_cost) > 0 and len(no_cost) / len(dv) > 0.5:
+            alerts.append(("주의", "원가 미입력 비율 높음",
+                           f"전체 {len(dv):,}건 중 {len(no_cost):,}건의 원가가 0원입니다. 원가표를 입력해 주세요."))
+    return alerts
+
+
+def verify_fees(dv: pd.DataFrame, rates: dict, tolerance: float) -> pd.DataFrame:
+    d = dv[dv["플랫폼"].map(lambda x: rates.get(x, 0) > 0)].copy()
+    if d.empty:
+        return pd.DataFrame()
+    d["기대수수료"] = d.apply(lambda r: r["매출액"] * rates[r["플랫폼"]] / 100, axis=1)
+    d["차이"] = d["수수료"] - d["기대수수료"]
+    flagged = d[d["차이"].abs() > tolerance]
+    return flagged[["플랫폼", "정산일", "상품명", "매출액", "수수료", "기대수수료", "차이"]].sort_values(
+        "차이", ascending=False).reset_index(drop=True).round(0)
+
+
 def build_insights(plat, prod, monthly, totals):
     items = [("전체 요약",
               f"총 매출 {totals['총매출']:,.0f}원, 순이익 {totals['순이익']:,.0f}원, "
               f"마진율 {totals['마진율(%)']:.2f}%입니다. 총 {totals['주문건수']:,}건의 주문을 집계했습니다.")]
     if plat.empty:
         return items
-
     top = plat.iloc[0]
     items.append(("수익 1위 플랫폼",
                   f"{top['플랫폼']}가 순이익 {top['순이익']:,.0f}원(전체의 {top['순이익비중(%)']:.1f}%)으로 가장 큽니다. "
                   f"이 플랫폼의 마진율은 {top['마진율(%)']:.2f}%입니다."))
-
     if len(plat) > 1:
         hi = plat.sort_values("마진율(%)", ascending=False).iloc[0]
         lo = plat.sort_values("마진율(%)").iloc[0]
@@ -493,7 +597,6 @@ def build_insights(plat, prod, monthly, totals):
         items.append(("수수료 부담",
                       f"{fee['플랫폼']}의 수수료율이 {fee['수수료율(%)']:.2f}%로 가장 높습니다. "
                       f"카테고리별 수수료나 판매 조건을 점검해 볼 만합니다."))
-
     cost_items = {"수수료": totals["수수료"], "배송비": totals["배송비"],
                   "기타비용": totals["기타비용"], "원가": totals["원가"]}
     cost_sum = sum(cost_items.values())
@@ -507,19 +610,11 @@ def build_insights(plat, prod, monthly, totals):
         if other_share > 20:
             items.append(("광고·쿠폰 점검",
                           f"기타비용(광고·쿠폰 등)이 비용의 {other_share:.1f}%입니다. 광고 수익률과 쿠폰 사용률을 확인해 보세요."))
-
     if not prod.empty:
         best = prod.iloc[0]
         items.append(("수익 1위 상품",
                       f"[{best['플랫폼']}] {best['상품명']}이 순이익 {best['순이익']:,.0f}원, "
                       f"마진율 {best['마진율(%)']:.2f}%로 가장 큽니다."))
-        loss = prod[prod["순이익"] < 0]
-        if not loss.empty:
-            names = ", ".join(loss["상품명"].head(3).tolist())
-            items.append(("적자 상품",
-                          f"순이익이 마이너스인 상품이 {len(loss)}개 있습니다(예: {names}). "
-                          f"판매가 또는 원가를 재검토하거나 판매 중단을 고려해 보세요."))
-
     if not monthly.empty:
         ms = monthly.groupby("정산월")["매출액"].sum().sort_index()
         if len(ms) >= 2:
@@ -527,7 +622,6 @@ def build_insights(plat, prod, monthly, totals):
             chg = (last - prev) / prev * 100 if prev else 0
             items.append(("월별 흐름",
                           f"{ms.index[-1]} 매출은 {last:,.0f}원으로 직전월({ms.index[-2]}) 대비 {chg:+.1f}% 입니다."))
-
     if totals["마진율(%)"] < 10:
         items.append(("종합 제언", "전체 마진율이 10% 미만입니다. 원가율과 수수료 구조를 우선 점검하세요."))
     elif totals["마진율(%)"] >= 30:
@@ -537,8 +631,21 @@ def build_insights(plat, prod, monthly, totals):
     return items
 
 
+def build_share_text(totals, plat, insights, alerts) -> str:
+    lines = ["[정산 요약]",
+             f"총매출 {totals['총매출']:,.0f}원 / 총비용 {totals['총비용']:,.0f}원",
+             f"순이익 {totals['순이익']:,.0f}원 / 마진율 {totals['마진율(%)']:.2f}%", "",
+             "[플랫폼별 순이익]"]
+    for _, r in plat.iterrows():
+        lines.append(f"- {r['플랫폼']}: 순이익 {r['순이익']:,.0f}원 / 마진율 {r['마진율(%)']:.2f}%")
+    if alerts:
+        lines += ["", "[이상 징후]"] + [f"- {a[1]}: {a[2]}" for a in alerts]
+    lines += ["", "[분석]"] + [f"- {t}: {x}" for t, x in insights]
+    return "\n".join(lines)
+
+
 # ----------------------------------------------------------------------
-# 차트 (가로 막대, 위에서 아래로 세로 배치)
+# 차트
 # ----------------------------------------------------------------------
 def style_chart(ch, height):
     return (ch.properties(height=height, width="container")
@@ -612,9 +719,9 @@ def style_sheet(ws):
         cell.font = HEADER_FONT
         cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
     ws.freeze_panes = "A2"
-    if ws.title == "분석코멘트":
-        ws.column_dimensions["A"].width = 22
-        ws.column_dimensions["B"].width = 110
+    if ws.title in ("분석코멘트", "이상징후"):
+        for col in range(1, ws.max_column + 1):
+            ws.column_dimensions[get_column_letter(col)].width = 60 if col > 1 else 22
         for row in ws.iter_rows(min_row=2):
             for c in row:
                 c.alignment = Alignment(wrap_text=True, vertical="top")
@@ -629,7 +736,7 @@ def style_sheet(ws):
                 cell.number_format = "0.00" if ("율" in header or "비중" in header) else "#,##0"
 
 
-def build_excel(totals, plat, prod, monthly, detail, insights, mapping_log) -> bytes:
+def build_excel(totals, plat, prod, monthly, detail, insights, mapping_log, alerts, be_df, cost_map) -> bytes:
     buf = io.BytesIO()
     with pd.ExcelWriter(buf, engine="openpyxl") as w:
         summary_rows = [
@@ -647,8 +754,15 @@ def build_excel(totals, plat, prod, monthly, detail, insights, mapping_log) -> b
                 w, sheet_name="월별추이", index=False)
         else:
             monthly.to_excel(w, sheet_name="월별추이", index=False)
+        if be_df is not None and not be_df.empty:
+            be_df.to_excel(w, sheet_name="손익분기", index=False)
+        pd.DataFrame(alerts or [("정보", "이상 징후 없음", "")], columns=["등급", "항목", "내용"]).to_excel(
+            w, sheet_name="이상징후", index=False)
         pd.DataFrame(insights, columns=["구분", "분석 내용"]).to_excel(w, sheet_name="분석코멘트", index=False)
         detail[DETAIL_COLS].to_excel(w, sheet_name="마진계산내역", index=False)
+        if cost_map:
+            pd.DataFrame(list(cost_map.items()), columns=["상품명", "개당원가"]).to_excel(
+                w, sheet_name="원가표", index=False)
         if not mapping_log.empty:
             mapping_log.to_excel(w, sheet_name="컬럼인식결과", index=False)
         for ws in w.book.worksheets:
@@ -684,7 +798,26 @@ def rate_cfg(cols):
 with st.sidebar:
     st.markdown("### Settings")
     cost_rate = st.slider("기본 원가율 (%)", 0, 100, 0, 1,
-                          help="파일에 원가 컬럼이 없을 때 매출액 대비로 적용됩니다.")
+                          help="파일에 원가 컬럼이 없고 원가표에도 없을 때 매출액 대비로 적용됩니다.")
+    st.divider()
+    st.markdown("**상품별 원가표**")
+    st.caption("상품명과 개당 원가를 입력하면 수량에 곱해 원가를 계산합니다.")
+    if "cost_df" not in st.session_state:
+        st.session_state.cost_df = pd.DataFrame({"상품명": pd.Series(dtype=str),
+                                                 "개당원가": pd.Series(dtype=float)})
+    cost_df = st.data_editor(st.session_state.cost_df, num_rows="dynamic",
+                             hide_index=True, key="cost_editor")
+    st.session_state.cost_df = cost_df
+    cost_upload = st.file_uploader("원가표 불러오기 (CSV)", type=["csv"], key="cost_upload",
+                                   help="열 이름: 상품명, 개당원가")
+    cost_map = table_to_map(cost_df)
+    if cost_upload is not None:
+        cost_map.update(parse_cost_csv(cost_upload.getvalue()))
+    if cost_map:
+        st.download_button("원가표 CSV 내보내기",
+                           data=pd.DataFrame(list(cost_map.items()), columns=["상품명", "개당원가"])
+                           .to_csv(index=False).encode("utf-8-sig"),
+                           file_name="원가표.csv", mime="text/csv")
     st.divider()
     use_demo = st.toggle("샘플 데이터로 체험하기", value=False)
     st.caption("실제 정산 파일을 올릴 때는 이 옵션을 끄세요.")
@@ -754,7 +887,7 @@ for i, p in enumerate(parsed):
         overrides[p["name"]] = chosen
 
 with st.spinner("정산 데이터를 분석하는 중..."):
-    detail, errors, mapping_log = process_all(parsed, overrides, cost_rate)
+    detail, errors, mapping_log = process_all(parsed, overrides, cost_rate, cost_map)
 
 for name, msg in errors:
     st.error(f"{name} 처리 실패: {msg}")
@@ -763,11 +896,25 @@ if detail.empty:
     st.warning("처리 가능한 데이터가 없습니다. 위 매핑에서 매출액 컬럼을 지정해 주세요.")
     st.stop()
 
-plat = make_platform_report(detail)
-prod = make_product_report(detail)
-monthly = make_monthly(detail)
-totals = make_totals(detail)
+# ----------------------------------------------------------------------
+# 기간 필터
+# ----------------------------------------------------------------------
+section("Period")
+months = sorted([m for m in detail["정산월"].unique() if m != "미상"])
+if "미상" in detail["정산월"].values:
+    months.append("미상")
+sel_months = st.multiselect("정산월 필터", months, default=months)
+dv = detail[detail["정산월"].isin(sel_months)] if sel_months else detail.iloc[0:0]
+if dv.empty:
+    st.warning("선택한 정산월에 데이터가 없습니다. 정산월을 하나 이상 선택해 주세요.")
+    st.stop()
+
+plat = make_platform_report(dv)
+prod = make_product_report(dv)
+monthly = make_monthly(dv)
+totals = make_totals(dv)
 insights = build_insights(plat, prod, monthly, totals)
+alerts = detect_anomalies(dv, plat, prod, monthly)
 
 # ----------------------------------------------------------------------
 # 핵심 지표
@@ -787,6 +934,18 @@ for col, key in zip(c, ["수수료", "배송비", "기타비용", "원가"]):
                  unsafe_allow_html=True)
 
 # ----------------------------------------------------------------------
+# 이상 징후
+# ----------------------------------------------------------------------
+section("Alerts")
+if alerts:
+    for level, title, text in alerts:
+        cls = "insight alert-warn" if level == "경고" else "insight"
+        st.markdown(f'<div class="{cls}"><div class="insight-title">[{level}] {title}</div>'
+                    f'<div class="insight-text">{text}</div></div>', unsafe_allow_html=True)
+else:
+    st.caption("감지된 이상 징후가 없습니다.")
+
+# ----------------------------------------------------------------------
 # 분석 리포트
 # ----------------------------------------------------------------------
 section("Analysis")
@@ -796,10 +955,28 @@ for title, text in insights:
                 f'<div class="insight-text">{text}</div></div>', unsafe_allow_html=True)
 
 # ----------------------------------------------------------------------
-# 차트 (위에서 아래로 세로 배치)
+# 기간 비교
+# ----------------------------------------------------------------------
+section("Period Compare")
+all_months = [m for m in sorted(detail["정산월"].unique()) if m != "미상"]
+if len(all_months) >= 2:
+    cc = st.columns(2)
+    month_a = cc[0].selectbox("기준 월 (A)", all_months, index=len(all_months) - 2)
+    month_b = cc[1].selectbox("비교 월 (B)", all_months, index=len(all_months) - 1)
+    if month_a == month_b:
+        st.caption("서로 다른 두 달을 선택하면 증감을 보여 드립니다.")
+    else:
+        cmp_df = compare_periods(detail, month_a, month_b)
+        st.dataframe(cmp_df, hide_index=True, use_container_width=True,
+                     column_config={**money_cfg([month_a, month_b, "증감"]),
+                                    **rate_cfg(["증감률(%)"])})
+else:
+    st.caption("두 개 이상의 정산월이 있으면 기간 비교를 사용할 수 있습니다.")
+
+# ----------------------------------------------------------------------
+# 차트
 # ----------------------------------------------------------------------
 section("Charts")
-
 st.markdown('<div class="card-title">플랫폼별 매출 · 순이익</div>', unsafe_allow_html=True)
 st.altair_chart(grouped_bar(plat, "플랫폼", ["매출액", "순이익"], [C_SALES, C_PROFIT]), use_container_width=True)
 
@@ -820,13 +997,11 @@ top_prod["라벨"] = top_prod.apply(lambda r: f"{r['플랫폼']} · {str(r['상�
 st.altair_chart(single_bar(top_prod, "라벨", "순이익", C_PROFIT, signed_color=True), use_container_width=True)
 
 # ----------------------------------------------------------------------
-# 플랫폼별 상세 리포트
+# 플랫폼 상세 리포트
 # ----------------------------------------------------------------------
 section("Platform Report")
 st.dataframe(
-    plat,
-    hide_index=True,
-    use_container_width=True,
+    plat, hide_index=True, use_container_width=True,
     column_config={**money_cfg(["객단가", "매출액", "수수료", "배송비", "기타비용", "원가", "순이익"]),
                    **rate_cfg(["수수료율(%)", "마진율(%)", "매출비중(%)", "순이익비중(%)"])},
 )
@@ -836,7 +1011,7 @@ st.dataframe(
 # ----------------------------------------------------------------------
 section("Drill Down")
 choice = st.selectbox("플랫폼 선택", ["전체"] + plat["플랫폼"].tolist())
-view = detail if choice == "전체" else detail[detail["플랫폼"] == choice]
+view = dv if choice == "전체" else dv[dv["플랫폼"] == choice]
 v = make_totals(view)
 d = st.columns(4)
 d[0].markdown(kpi("매출", f"{v['총매출']:,.0f}원", f"{v['주문건수']:,}건"), unsafe_allow_html=True)
@@ -845,13 +1020,56 @@ d[2].markdown(kpi("순수익", f"{v['순이익']:,.0f}원", accent=True), unsafe
 d[3].markdown(kpi("마진율", f"{v['마진율(%)']:.2f}%"), unsafe_allow_html=True)
 st.write("")
 
+# ----------------------------------------------------------------------
+# 손익분기 / 목표
+# ----------------------------------------------------------------------
+section("Break-even")
+bc = st.columns(2)
+fixed_cost = bc[0].number_input("기간 고정비 (광고·인건비 등, 원)", min_value=0, value=0, step=10000)
+target_profit = bc[1].number_input("목표 순이익 (원)", min_value=0, value=0, step=10000)
+be_df = make_breakeven(make_product_report(view), float(fixed_cost), float(target_profit))
+if be_df.empty:
+    st.caption("표시할 상품이 없습니다.")
+else:
+    st.caption("개당 공헌이익 = 상품 순이익 ÷ 수량 (원가·수수료·배송·기타 차감 후). "
+               "고정비와 목표를 입력하면 필요한 판매수량을 계산합니다.")
+    st.dataframe(be_df.head(50), hide_index=True, use_container_width=True,
+                 column_config={**money_cfg(["개당평균매출", "개당공헌이익"]),
+                                **{c: st.column_config.NumberColumn(c, format="%d") for c in
+                                   ["수량", "손익분기수량", "목표달성수량"]}})
+
+# ----------------------------------------------------------------------
+# 정산 검증
+# ----------------------------------------------------------------------
+section("Fee Verification")
+st.caption("플랫폼별 약정 수수료율을 입력하면 실제 수수료와 차이가 큰 건을 찾아 보여 줍니다. 0%는 검증하지 않습니다.")
+with st.expander("플랫폼별 기대 수수료율 입력", expanded=False):
+    rate_inputs = {}
+    rc = st.columns(3)
+    for j, pf in enumerate(plat["플랫폼"].tolist()):
+        rate_inputs[pf] = rc[j % 3].number_input(f"{pf} 기대 수수료율 (%)", min_value=0.0,
+                                                 max_value=100.0, value=0.0, step=0.1,
+                                                 key=f"rate_{pf}")
+    tol = st.number_input("허용 오차 (원)", min_value=0, value=1000, step=100)
+flagged = verify_fees(dv, rate_inputs, float(tol))
+if not any(rate_inputs.values()):
+    st.caption("기대 수수료율을 입력하면 결과가 표시됩니다.")
+elif flagged.empty:
+    st.caption("허용 오차를 벗어난 수수료 건이 없습니다.")
+else:
+    st.warning(f"허용 오차를 벗어난 건이 {len(flagged):,}건 있습니다. 차이가 큰 순서로 정렬했습니다.")
+    st.dataframe(flagged, hide_index=True, use_container_width=True,
+                 column_config={**money_cfg(["매출액", "수수료", "기대수수료", "차이"])})
+
+# ----------------------------------------------------------------------
+# 탭: 상품 / 월별 / 원본
+# ----------------------------------------------------------------------
 tab1, tab2, tab3 = st.tabs(["상품별 수익", "월별 추이", "마진 계산 내역"])
 with tab1:
     view_prod = make_product_report(view)
     st.caption(f"{choice} 기준 상품 {len(view_prod):,}개 · 순이익 높은 순")
     st.dataframe(view_prod, hide_index=True, use_container_width=True,
-                 column_config={**money_cfg(["매출액", "수수료", "원가", "순이익"]),
-                                **rate_cfg(["마진율(%)"])})
+                 column_config={**money_cfg(["매출액", "수수료", "원가", "순이익"]), **rate_cfg(["마진율(%)"])})
 with tab2:
     if monthly.empty:
         st.info("정산일을 날짜로 인식하지 못해 월별 추이를 만들 수 없습니다.")
@@ -865,14 +1083,21 @@ with tab3:
                                 **rate_cfg(["마진율(%)"])})
 
 # ----------------------------------------------------------------------
-# 다운로드
+# 공유 & 다운로드
 # ----------------------------------------------------------------------
-section("Export")
-st.markdown('<div class="card-title">종합 보고서 다운로드</div>', unsafe_allow_html=True)
-st.caption("종합요약 · 플랫폼별상세 · 상품별상세 · 월별추이 · 분석코멘트 · 마진계산내역 · 컬럼인식결과 시트로 구성됩니다.")
+section("Share & Export")
+share_text = build_share_text(totals, plat, insights, alerts)
+st.markdown('<div class="card-title">요약 텍스트 (카카오톡·메일에 붙여넣기)</div>', unsafe_allow_html=True)
+st.code(share_text, language=None)
+st.download_button("요약 텍스트 다운로드 (.txt)", data=share_text.encode("utf-8"),
+                   file_name=f"정산요약_{pd.Timestamp.now():%Y%m%d_%H%M}.txt", mime="text/plain")
+
+st.markdown('<div class="card-title">종합 보고서 (엑셀)</div>', unsafe_allow_html=True)
+st.caption("종합요약 · 플랫폼별상세 · 상품별상세 · 월별추이 · 손익분기 · 이상징후 · 분석코멘트 · "
+           "마진계산내역 · 원가표 · 컬럼인식결과 시트로 구성됩니다.")
 st.download_button(
     label="엑셀 보고서 다운로드 (.xlsx)",
-    data=build_excel(totals, plat, prod, monthly, detail, insights, mapping_log),
+    data=build_excel(totals, plat, prod, monthly, dv, insights, mapping_log, alerts, be_df, cost_map),
     file_name=f"정산보고서_{pd.Timestamp.now():%Y%m%d_%H%M}.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     type="primary",
