@@ -60,9 +60,8 @@ st.markdown(
     .kpi-accent {{ background:{TEXT}; border-color:{TEXT}; }}
     .kpi-accent .kpi-label, .kpi-accent .kpi-sub {{ color:#3A3F4B; }}
     .kpi-accent .kpi-value {{ color:{BG}; }}
-    .card {{ border:1px solid {LINE}; background:{SURFACE}; padding:20px 24px; margin-bottom:12px; }}
     .card-title {{ font-size:0.8rem; letter-spacing:0.14em; text-transform:uppercase;
-                  font-weight:700; color:{TEXT}; margin-bottom:10px; }}
+                  font-weight:700; color:{TEXT}; margin:18px 0 8px 0; }}
     .insight {{ background:{SURFACE}; border:1px solid {LINE}; border-left:3px solid {TEXT};
                padding:16px 20px; margin-bottom:10px; }}
     .insight-title {{ font-weight:700; color:{TEXT}; margin-bottom:6px; }}
@@ -134,7 +133,7 @@ DETAIL_COLS = ["플랫폼", "정산월", "정산일", "상품명", "수량", "�
 
 
 # ----------------------------------------------------------------------
-# 샘플 데이터 (쿠팡·네이버·11번가 형식)
+# 샘플 데이터
 # ----------------------------------------------------------------------
 class MemoryFile:
     def __init__(self, name: str, data: bytes):
@@ -472,10 +471,9 @@ def make_monthly(detail: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_insights(plat, prod, monthly, totals):
-    items = []
-    items.append(("전체 요약",
-                  f"총 매출 {totals['총매출']:,.0f}원, 순이익 {totals['순이익']:,.0f}원, "
-                  f"마진율 {totals['마진율(%)']:.2f}%입니다. 총 {totals['주문건수']:,}건의 주문을 집계했습니다."))
+    items = [("전체 요약",
+              f"총 매출 {totals['총매출']:,.0f}원, 순이익 {totals['순이익']:,.0f}원, "
+              f"마진율 {totals['마진율(%)']:.2f}%입니다. 총 {totals['주문건수']:,}건의 주문을 집계했습니다.")]
     if plat.empty:
         return items
 
@@ -502,8 +500,7 @@ def build_insights(plat, prod, monthly, totals):
     if cost_sum > 0:
         biggest = max(cost_items, key=cost_items.get)
         share = cost_items[biggest] / cost_sum * 100
-        items.append(("비용 구조",
-                      f"전체 비용({cost_sum:,.0f}원) 중 {biggest}가 {share:.1f}%로 가장 큽니다."))
+        items.append(("비용 구조", f"전체 비용({cost_sum:,.0f}원) 중 {biggest}가 {share:.1f}%로 가장 큽니다."))
         if totals["배송비"] / cost_sum * 100 > 25:
             items.append(("배송비 경고", "배송비가 비용의 25%를 넘습니다. 무료배송 기준 금액과 택배 계약을 재검토해 보세요."))
         other_share = totals["기타비용"] / cost_sum * 100
@@ -541,10 +538,10 @@ def build_insights(plat, prod, monthly, totals):
 
 
 # ----------------------------------------------------------------------
-# 차트 (가로 막대 · 세로 적층)
+# 차트 (가로 막대, 위에서 아래로 세로 배치)
 # ----------------------------------------------------------------------
 def style_chart(ch, height):
-    return (ch.properties(height=height)
+    return (ch.properties(height=height, width="container")
               .configure_view(strokeWidth=0)
               .configure(background=SURFACE)
               .configure_axis(labelColor=TEXT_SUB, titleColor=TEXT_SUB, gridColor=LINE,
@@ -562,30 +559,26 @@ def grouped_bar(df, cat, measures, colors):
         tooltip=[alt.Tooltip(f"{cat}:N"), alt.Tooltip("구분:N"), alt.Tooltip("값:Q", format=",.0f")],
     )
     bars = base.mark_bar(cornerRadiusEnd=3)
-    labels = base.mark_text(align="left", dx=4, color=TEXT, fontSize=12).encode(
-        text=alt.Text("값:Q", format=",.0f"))
+    labels = base.mark_text(align="left", dx=4, color=TEXT, fontSize=12).encode(text=alt.Text("값:Q", format=",.0f"))
     return style_chart(alt.layer(bars, labels), max(300, 90 * len(df) + 80))
 
 
 def single_bar(df, cat, val, color, fmt=",.0f", signed_color=False):
-    if signed_color:
-        fill = alt.condition(f"datum['{val}'] < 0", alt.value(C_BAD), alt.value(color))
-    else:
-        fill = alt.value(color)
+    fill = (alt.condition(f"datum['{val}'] < 0", alt.value(C_BAD), alt.value(color))
+            if signed_color else alt.value(color))
     base = alt.Chart(df).encode(
         y=alt.Y(f"{cat}:N", sort=None, title=None, axis=alt.Axis(labelLimit=280, labelFontSize=14)),
         x=alt.X(f"{val}:Q", title=None, axis=alt.Axis(format=fmt)),
         tooltip=[alt.Tooltip(f"{cat}:N"), alt.Tooltip(f"{val}:Q", format=fmt)],
     )
     bars = base.mark_bar(cornerRadiusEnd=3).encode(color=fill)
-    labels = base.mark_text(align="left", dx=4, color=TEXT, fontSize=12).encode(
-        text=alt.Text(f"{val}:Q", format=fmt))
+    labels = base.mark_text(align="left", dx=4, color=TEXT, fontSize=12).encode(text=alt.Text(f"{val}:Q", format=fmt))
     return style_chart(alt.layer(bars, labels), max(260, 64 * len(df) + 80))
 
 
 def cost_stack(plat):
     long = plat[["플랫폼"] + list(COST_COLORS)].melt(id_vars="플랫폼", var_name="비용", value_name="금액")
-    ch = alt.Chart(long).mark_bar(cornerRadiusEnd=0).encode(
+    ch = alt.Chart(long).mark_bar().encode(
         y=alt.Y("플랫폼:N", sort=None, title=None, axis=alt.Axis(labelLimit=280, labelFontSize=14)),
         x=alt.X("금액:Q", stack="zero", title=None, axis=alt.Axis(format=",.0f")),
         color=alt.Color("비용:N", scale=alt.Scale(domain=list(COST_COLORS), range=list(COST_COLORS.values())),
@@ -633,8 +626,7 @@ def style_sheet(ws):
         for row in range(2, ws.max_row + 1):
             cell = ws.cell(row, col_idx)
             if isinstance(cell.value, (int, float)):
-                rate = ("율" in header or "비중" in header or "율" in str(ws.cell(row, 1).value or ""))
-                cell.number_format = "0.00" if rate else "#,##0"
+                cell.number_format = "0.00" if ("율" in header or "비중" in header) else "#,##0"
 
 
 def build_excel(totals, plat, prod, monthly, detail, insights, mapping_log) -> bytes:
@@ -670,15 +662,20 @@ def build_excel(totals, plat, prod, monthly, detail, insights, mapping_log) -> b
 def kpi(label, value, sub="", accent=False):
     cls = "kpi kpi-accent" if accent else "kpi"
     sub_html = f'<div class="kpi-sub">{sub}</div>' if sub else ""
-    return f'<div class="{cls}"><div class="kpi-label">{label}</div><div class="kpi-value">{value}</div>{sub_html}</div>'
+    return (f'<div class="{cls}"><div class="kpi-label">{label}</div>'
+            f'<div class="kpi-value">{value}</div>{sub_html}</div>')
 
 
 def section(title):
     st.markdown(f'<div class="section-label">{title}</div>', unsafe_allow_html=True)
 
 
-MONEY_CFG = lambda cols: {c: st.column_config.NumberColumn(c, format="%d") for c in cols}
-RATE_CFG = lambda cols: {c: st.column_config.NumberColumn(c, format="%.2f%%") for c in cols}
+def money_cfg(cols):
+    return {c: st.column_config.NumberColumn(c, format="%d") for c in cols}
+
+
+def rate_cfg(cols):
+    return {c: st.column_config.NumberColumn(c, format="%.2f%%") for c in cols}
 
 
 # ----------------------------------------------------------------------
@@ -785,9 +782,8 @@ c[3].markdown(kpi("마진율", f"{totals['마진율(%)']:.2f}%", "순이익 ÷ �
 st.write("")
 c = st.columns(4)
 rev = totals["총매출"] or 1
-for col, (label, key) in zip(c, [("수수료", "수수료"), ("배송비", "배송비"),
-                                  ("기타비용", "기타비용"), ("원가", "원가")]):
-    col.markdown(kpi(label, f"{totals[key]:,.0f}원", f"매출 대비 {totals[key] / rev * 100:.1f}%"),
+for col, key in zip(c, ["수수료", "배송비", "기타비용", "원가"]):
+    col.markdown(kpi(key, f"{totals[key]:,.0f}원", f"매출 대비 {totals[key] / rev * 100:.1f}%"),
                  unsafe_allow_html=True)
 
 # ----------------------------------------------------------------------
@@ -800,13 +796,12 @@ for title, text in insights:
                 f'<div class="insight-text">{text}</div></div>', unsafe_allow_html=True)
 
 # ----------------------------------------------------------------------
-# 차트 (위에서 아래로 세로 적층, 가로 막대)
+# 차트 (위에서 아래로 세로 배치)
 # ----------------------------------------------------------------------
 section("Charts")
 
 st.markdown('<div class="card-title">플랫폼별 매출 · 순이익</div>', unsafe_allow_html=True)
-st.altair_chart(grouped_bar(plat, "플랫폼", ["매출액", "순이익"], [C_SALES, C_PROFIT]),
-                use_container_width=True)
+st.altair_chart(grouped_bar(plat, "플랫폼", ["매출액", "순이익"], [C_SALES, C_PROFIT]), use_container_width=True)
 
 st.markdown('<div class="card-title">플랫폼별 마진율 (%)</div>', unsafe_allow_html=True)
 st.altair_chart(single_bar(plat, "플랫폼", "마진율(%)", C_PROFIT, fmt=".2f", signed_color=True),
@@ -822,8 +817,7 @@ if not monthly.empty:
 st.markdown('<div class="card-title">순이익 상위 상품 TOP 15</div>', unsafe_allow_html=True)
 top_prod = prod.head(15).copy()
 top_prod["라벨"] = top_prod.apply(lambda r: f"{r['플랫폼']} · {str(r['상품명'])[:26]}", axis=1)
-st.altair_chart(single_bar(top_prod, "라벨", "순이익", C_PROFIT, signed_color=True),
-                use_container_width=True)
+st.altair_chart(single_bar(top_prod, "라벨", "순이익", C_PROFIT, signed_color=True), use_container_width=True)
 
 # ----------------------------------------------------------------------
 # 플랫폼별 상세 리포트
@@ -833,12 +827,12 @@ st.dataframe(
     plat,
     hide_index=True,
     use_container_width=True,
-    column_config={**MONEY_CFG(["객단가", "매출액", "수수료", "배송비", "기타비용", "원가", "순이익"]),
-                   **RATE_CFG(["수수료율(%)", "마진율(%)", "매출비중(%)", "순이익비중(%)"])},
+    column_config={**money_cfg(["객단가", "매출액", "수수료", "배송비", "기타비용", "원가", "순이익"]),
+                   **rate_cfg(["수수료율(%)", "마진율(%)", "매출비중(%)", "순이익비중(%)"])},
 )
 
 # ----------------------------------------------------------------------
-# 플랫폼 드릴다운
+# 드릴다운
 # ----------------------------------------------------------------------
 section("Drill Down")
 choice = st.selectbox("플랫폼 선택", ["전체"] + plat["플랫폼"].tolist())
@@ -851,20 +845,35 @@ d[2].markdown(kpi("순수익", f"{v['순이익']:,.0f}원", accent=True), unsafe
 d[3].markdown(kpi("마진율", f"{v['마진율(%)']:.2f}%"), unsafe_allow_html=True)
 st.write("")
 
-# ----------------------------------------------------------------------
-# 탭: 상품 / 월별 / 원본 계산 내역
-# ----------------------------------------------------------------------
 tab1, tab2, tab3 = st.tabs(["상품별 수익", "월별 추이", "마진 계산 내역"])
 with tab1:
     view_prod = make_product_report(view)
     st.caption(f"{choice} 기준 상품 {len(view_prod):,}개 · 순이익 높은 순")
     st.dataframe(view_prod, hide_index=True, use_container_width=True,
-                 column_config={**MONEY_CFG(["매출액", "수수료", "원가", "순이익"]),
-                                **RATE_CFG(["마진율(%)"])})
+                 column_config={**money_cfg(["매출액", "수수료", "원가", "순이익"]),
+                                **rate_cfg(["마진율(%)"])})
 with tab2:
     if monthly.empty:
         st.info("정산일을 날짜로 인식하지 못해 월별 추이를 만들 수 없습니다.")
     else:
         mv = monthly if choice == "전체" else monthly[monthly["플랫폼"] == choice]
         st.dataframe(mv, hide_index=True, use_container_width=True,
-                     column_config={**MONEY_CFG(["매출액", "순이익"]), **RATE
+                     column_config={**money_cfg(["매출액", "순이익"]), **rate_cfg(["마진율(%)"])})
+with tab3:
+    st.dataframe(view[DETAIL_COLS], hide_index=True, use_container_width=True,
+                 column_config={**money_cfg(["매출액", "수수료", "배송비", "기타비용", "원가", "순이익"]),
+                                **rate_cfg(["마진율(%)"])})
+
+# ----------------------------------------------------------------------
+# 다운로드
+# ----------------------------------------------------------------------
+section("Export")
+st.markdown('<div class="card-title">종합 보고서 다운로드</div>', unsafe_allow_html=True)
+st.caption("종합요약 · 플랫폼별상세 · 상품별상세 · 월별추이 · 분석코멘트 · 마진계산내역 · 컬럼인식결과 시트로 구성됩니다.")
+st.download_button(
+    label="엑셀 보고서 다운로드 (.xlsx)",
+    data=build_excel(totals, plat, prod, monthly, detail, insights, mapping_log),
+    file_name=f"정산보고서_{pd.Timestamp.now():%Y%m%d_%H%M}.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    type="primary",
+)
