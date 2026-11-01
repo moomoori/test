@@ -1,21 +1,23 @@
-# Settlement Report (정산 대시보드)
+# 셀러 정산 대시보드
 
-## 설치 및 실행
+쿠팡, 네이버 스마트스토어 등 쇼핑몰 정산 파일(CSV/XLSX)을 올리면 매출, 순이익, 마진율을 자동 계산하고 엑셀 보고서로 내려받을 수 있습니다.
+
+## 실행
 
 ```bash
-python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 streamlit run app.py --server.port 8501 --server.address 0.0.0.0
 ```
 
-접속: http://서버IP:8501
-
-## 파일 구성
-
-- app.py: 메인 앱 (단일 파일로 실행 가능)
-- .streamlit/config.toml: 다크 모드 테마 설정 (app.py와 같은 위치에 두세요)
-- requirements.txt: 의존성 목록
+접속: `http://서버IP:8501`
 
 ## 컬럼 인식
 
-컬럼명이 다르면 app.py의 COLUMN_ALIASES에 표기를 추가하세요. 업로드 후 '컬럼 자동 인식 결과 확인'에서 매핑을 볼 수 있습니다.
+- `app.py`의 `COLUMN_ALIASES`에 항목별 컬럼명 후보가 있습니다. 판매가, 결제금액, 주문금액, 금액 등은 모두 매출액으로 인식합니다.
+- `NEGATIVE_WORDS`에 포함된 단어(할인, 쿠폰, 환불, 원가 등)가 들어간 컬럼은 매출액으로 잡지 않습니다.
+- 화면의 "컬럼 자동 인식 결과"에서 파일별 매핑을 확인할 수 있습니다.
+
+## 계산식
+
+- 순이익 = 매출액 − 수수료 − 배송비 − 기타비용 − 원가
+- 마진율(%) = 순이익 ÷ 매출액 × 100

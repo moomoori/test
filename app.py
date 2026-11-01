@@ -9,7 +9,7 @@ from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
 
 # ----------------------------------------------------------------------
-# 페이지 & 스타일 (다크 모드 기본 · 얇은 선 구분 · 높은 대비)
+# 페이지 & 스타일 (다크 모드 기본 · 얇은 선 · 높은 대비)
 # ----------------------------------------------------------------------
 st.set_page_config(page_title="Settlement Report", page_icon="▫️", layout="wide",
                    initial_sidebar_state="expanded")
@@ -19,7 +19,6 @@ SURFACE = "#16181D"
 LINE = "#3A3F4B"
 TEXT = "#F5F5F5"
 TEXT_SUB = "#B8BDC7"
-ACCENT = "#F5F5F5"
 ACCENT_TEXT = "#0E0F12"
 SERIES_2 = "#8A8F9A"
 
@@ -28,13 +27,11 @@ st.markdown(
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-
-    html, body, [class*="css"], .stApp, .stMarkdown, p, li, label, span, div {{
+    html, body, [class*="css"], .stApp {{
         font-family: 'Pretendard', 'Noto Sans KR', -apple-system, 'Segoe UI', sans-serif;
     }}
     .stApp {{ background: {BG}; color: {TEXT}; }}
-    .stApp p, .stApp li, .stApp label, .stApp span, .stApp h1, .stApp h2, .stApp h3,
-    .stApp h4, .stMarkdown {{ color: {TEXT}; }}
+    .stApp p, .stApp li, .stApp label, .stApp h1, .stApp h2, .stApp h3 {{ color: {TEXT}; }}
     .block-container {{ padding-top: 2rem; padding-bottom: 4rem; max-width: 1200px; }}
     header[data-testid="stHeader"] {{ background: transparent; }}
 
@@ -46,7 +43,6 @@ st.markdown(
     }}
     .brand {{ font-family: 'Playfair Display', 'Nanum Myeongjo', serif; font-size: 1.1rem;
               letter-spacing: 0.2em; font-weight: 600; color: {TEXT}; }}
-
     .hero {{ text-align: center; padding: 48px 0 40px 0; border-bottom: 1px solid {LINE};
              margin-bottom: 36px; }}
     .hero h1 {{ font-family: 'Playfair Display', 'Nanum Myeongjo', serif; font-weight: 400;
@@ -59,9 +55,8 @@ st.markdown(
         color: {TEXT}; font-weight: 700; margin: 36px 0 14px 0;
         padding-bottom: 8px; border-bottom: 1px solid {LINE};
     }}
-
     .kpi {{
-        background: {SURFACE}; border: 1px solid {LINE}; padding: 22px 22px 20px 22px;
+        background: {SURFACE}; border: 1px solid {LINE}; padding: 22px;
         height: 100%; min-height: 136px;
     }}
     .kpi-label {{ font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase;
@@ -69,22 +64,18 @@ st.markdown(
     .kpi-value {{ font-family: 'Playfair Display', 'Nanum Myeongjo', serif; font-size: 2rem;
                   color: {TEXT}; margin-top: 12px; line-height: 1.1; }}
     .kpi-sub {{ font-size: 0.84rem; color: {TEXT_SUB}; margin-top: 10px; }}
-    .kpi-accent {{ background: {ACCENT}; border-color: {ACCENT}; }}
+    .kpi-accent {{ background: {TEXT}; border-color: {TEXT}; }}
     .kpi-accent .kpi-label, .kpi-accent .kpi-sub {{ color: #3A3F4B; }}
     .kpi-accent .kpi-value {{ color: {ACCENT_TEXT}; }}
 
-    .card {{ border: 1px solid {LINE}; padding: 22px 24px; background: {SURFACE};
-             margin-bottom: 8px; }}
     .card-title {{ font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase;
                    font-weight: 700; color: {TEXT}; margin-bottom: 12px; }}
+    .card {{ border: 1px solid {LINE}; padding: 22px 24px; background: {SURFACE}; }}
 
     div[data-testid="stFileUploader"] section {{
         background: {SURFACE}; border: 1px dashed {TEXT_SUB}; border-radius: 0;
     }}
     div[data-testid="stFileUploader"] section:hover {{ border-color: {TEXT}; }}
-    div[data-testid="stFileUploader"] small,
-    div[data-testid="stFileUploaderDropzoneInstructions"] span,
-    div[data-testid="stFileUploaderDropzoneInstructions"] small {{ color: {TEXT_SUB} !important; }}
     div[data-testid="stFileUploader"] button {{
         border-radius: 0; border: 1px solid {TEXT}; background: transparent; color: {TEXT};
     }}
@@ -103,14 +94,8 @@ st.markdown(
     [data-testid="stDownloadButton"] button:hover {{ background: #D6D6D6; border-color: #D6D6D6; }}
 
     section[data-testid="stSidebar"] {{ background: {SURFACE}; border-right: 1px solid {LINE}; }}
-    section[data-testid="stSidebar"] h3 {{
-        font-family: 'Playfair Display', 'Nanum Myeongjo', serif; font-weight: 600; color: {TEXT};
-    }}
-    [data-testid="stCaptionContainer"], .stCaption {{ color: {TEXT_SUB} !important; }}
-
     div[data-testid="stDataFrame"] {{ border: 1px solid {LINE}; }}
     div[data-testid="stAlert"] {{ border-radius: 0; border: 1px solid {LINE}; }}
-
     .empty {{ border: 1px solid {LINE}; padding: 64px 24px; text-align: center;
               background: {SURFACE}; }}
     .empty-eyebrow {{ font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase;
@@ -128,12 +113,13 @@ st.markdown(
 # ----------------------------------------------------------------------
 COLUMN_ALIASES = {
     "platform": ["쇼핑몰", "플랫폼", "채널", "판매처", "몰이름", "platform", "mall", "channel"],
-    "date": ["정산일", "정산기준일", "주문일", "주문일자", "결제일", "날짜", "판매일", "date", "orderdate"],
+    "date": ["정산일", "정산기준일", "주문일", "주문일자", "결제일", "날짜", "판매일",
+             "date", "orderdate"],
     "product": ["상품명", "상품", "품목명", "제품명", "품목", "product", "productname", "item"],
     "quantity": ["수량", "주문수량", "판매수량", "qty", "quantity"],
     "sales": ["매출액", "총매출", "매출", "매출금액", "판매금액", "판매가", "판매가격",
-              "결제금액", "결제가", "총결제금액", "주문금액", "구매금액", "상품금액",
-              "정산대상금액", "sales", "revenue", "amount"],
+              "판매액", "결제금액", "결제가", "결제액", "총결제금액", "주문금액", "구매금액",
+              "상품금액", "정산대상금액", "금액", "sales", "revenue", "amount"],
     "commission": ["수수료", "판매수수료", "서비스이용료", "중개수수료", "수수료합계",
                    "판매자수수료", "commission", "fee"],
     "shipping": ["배송비", "배송비용", "택배비", "배송료", "shipping", "delivery", "deliveryfee"],
@@ -141,14 +127,15 @@ COLUMN_ALIASES = {
     "cost": ["원가", "매입원가", "매입가", "공급가", "cost", "purchasecost"],
 }
 
+# 이 단어가 포함된 컬럼은 해당 항목으로 잡지 않음
 NEGATIVE_WORDS = {
-    "sales": ["원가", "수수료", "배송", "순이익", "이익", "율", "비율"],
+    "sales": ["원가", "수수료", "배송", "순이익", "이익", "할인", "쿠폰", "적립",
+              "환불", "취소", "율", "비율"],
     "commission": ["순이익", "율", "비율"],
     "shipping": ["율", "비율"],
     "other": ["율", "비율"],
     "cost": ["율", "비율"],
 }
-
 MATCH_THRESHOLD = 0.7
 
 STANDARD_LABEL = {
@@ -156,7 +143,6 @@ STANDARD_LABEL = {
     "sales": "매출액", "commission": "수수료", "shipping": "배송비",
     "other": "기타비용", "cost": "원가",
 }
-
 EXCLUDE_KEYWORDS = ["합계", "소계", "총계", "total", "sum"]
 DETAIL_COLS = ["플랫폼", "정산일", "상품명", "수량", "매출액", "수수료", "배송비",
                "기타비용", "원가", "순이익", "마진율(%)", "원본파일"]
@@ -230,7 +216,8 @@ def make_sample_files(seed: int = 42):
     buf = io.BytesIO()
     coupang.to_excel(buf, index=False)
     files.append(MemoryFile("sample_쿠팡_정산.xlsx", buf.getvalue()))
-    files.append(MemoryFile("sample_네이버_정산.csv", naver.to_csv(index=False).encode("utf-8-sig")))
+    files.append(MemoryFile("sample_네이버_정산.csv",
+                            naver.to_csv(index=False).encode("utf-8-sig")))
     buf = io.BytesIO()
     elev.to_excel(buf, index=False)
     files.append(MemoryFile("sample_11번가_정산.xlsx", buf.getvalue()))
@@ -238,16 +225,17 @@ def make_sample_files(seed: int = 42):
 
 
 # ----------------------------------------------------------------------
-# 정규화 · 매핑
+# 정규화 / 컬럼 매핑
 # ----------------------------------------------------------------------
 def normalize(text) -> str:
     s = str(text)
-    s = re.sub(r"\(.*?\)|\[.*?\]|<.*?>", "", s)
-    s = re.sub(r"[\s_\-/·:.,]", "", s)
+    s = re.sub(r"\(.*?\)|\[.*?\]|<.*?>", "", s)     # 결제금액(원) -> 결제금액
+    s = re.sub(r"[\s_\-/·:.,]", "", s)               # 공백·구분기호 제거
     return s.lower()
 
 
 def score_column(col_norm: str, alias_norm: str) -> float:
+    """1.0 완전 일치 / 0.7~0.95 포함 관계 / 0.8 이상 유사도"""
     if not col_norm or not alias_norm:
         return 0.0
     if col_norm == alias_norm:
@@ -264,6 +252,7 @@ def is_negative(key: str, col_norm: str) -> bool:
 
 
 def map_columns(df: pd.DataFrame):
+    """반환: (mapping {항목: 원본컬럼}, info {항목: (원본컬럼, 점수)})"""
     candidates = []
     for col in df.columns:
         cn = normalize(col)
@@ -276,6 +265,7 @@ def map_columns(df: pd.DataFrame):
             if best >= MATCH_THRESHOLD:
                 candidates.append((best, key, col))
 
+    # 점수 높은 순으로 배정: 항목당 1개, 컬럼당 1개
     candidates.sort(key=lambda x: x[0], reverse=True)
     mapping, info, used_cols = {}, {}, set()
     for score, key, col in candidates:
@@ -301,6 +291,7 @@ def read_raw(raw: bytes, name: str, header: int) -> pd.DataFrame:
 
 
 def load_settlement(raw: bytes, name: str):
+    """헤더 행을 0~9행에서 찾고, 매출액이 인식되는 첫 행을 사용한다."""
     for header in range(10):
         try:
             df = read_raw(raw, name, header)
@@ -309,7 +300,7 @@ def load_settlement(raw: bytes, name: str):
         mapping, info = map_columns(df)
         if "sales" in mapping:
             return df, mapping, info
-    raise ValueError("'매출액'(판매가·결제금액 등 포함)에 해당하는 컬럼을 찾지 못했습니다.")
+    raise ValueError("'매출액'(판매가·결제금액·금액 등 포함)에 해당하는 컬럼을 찾지 못했습니다.")
 
 
 def to_number(series: pd.Series) -> pd.Series:
@@ -320,7 +311,7 @@ def to_number(series: pd.Series) -> pd.Series:
 
 
 # ----------------------------------------------------------------------
-# 계산
+# 처리 / 계산
 # ----------------------------------------------------------------------
 def process_files(files, default_cost_rate: float):
     frames, errors, logs = [], [], []
@@ -385,7 +376,7 @@ def make_totals(detail: pd.DataFrame) -> dict:
 
 
 # ----------------------------------------------------------------------
-# 엑셀 생성 (다운로드용은 밝은 인쇄 스타일)
+# 엑셀 생성 (열람·인쇄용 밝은 스타일)
 # ----------------------------------------------------------------------
 HEADER_FILL = PatternFill("solid", fgColor="111111")
 HEADER_FONT = Font(bold=True, color="FFFFFF")
@@ -397,8 +388,8 @@ def style_sheet(ws):
         cell.font = HEADER_FONT
         cell.alignment = Alignment(horizontal="center", vertical="center")
     ws.freeze_panes = "A2"
-    for col_idx, cell0 in enumerate(ws[1], start=1):
-        header = str(cell0.value or "")
+    for col_idx, head in enumerate(ws[1], start=1):
+        header = str(head.value or "")
         letter = get_column_letter(col_idx)
         values = [str(ws.cell(r, col_idx).value or "") for r in range(1, ws.max_row + 1)]
         ws.column_dimensions[letter].width = min(max(len(v) for v in values) * 1.6 + 4, 40)
@@ -408,13 +399,15 @@ def style_sheet(ws):
                 cell.number_format = "0.00" if "율" in header else "#,##0"
 
 
-def build_excel(detail, summary, totals) -> bytes:
+def build_excel(detail, summary, totals, mapping_log) -> bytes:
     buf = io.BytesIO()
     with pd.ExcelWriter(buf, engine="openpyxl") as writer:
         pd.DataFrame(list(totals.items()), columns=["항목", "값"]).to_excel(
             writer, sheet_name="종합요약", index=False)
         summary.to_excel(writer, sheet_name="플랫폼별요약", index=False)
         detail.to_excel(writer, sheet_name="마진계산내역", index=False)
+        if not mapping_log.empty:
+            mapping_log.to_excel(writer, sheet_name="컬럼인식결과", index=False)
         for ws in writer.book.worksheets:
             style_sheet(ws)
     return buf.getvalue()
@@ -448,7 +441,7 @@ with st.sidebar:
     st.caption("실제 정산 파일을 올릴 때는 이 옵션을 끄세요.")
 
 # ----------------------------------------------------------------------
-# 상단 바 & 타이틀
+# 타이틀
 # ----------------------------------------------------------------------
 st.markdown(
     """
@@ -464,12 +457,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-uploaded = st.file_uploader(
-    "정산 파일 업로드",
-    type=["csv", "xlsx"],
-    accept_multiple_files=True,
-    label_visibility="collapsed",
-)
+uploaded = st.file_uploader("정산 파일 업로드", type=["csv", "xlsx"],
+                            accept_multiple_files=True, label_visibility="collapsed")
 
 if use_demo:
     source_files = make_sample_files()
@@ -500,7 +489,7 @@ for name, msg in errors:
 
 if not mapping_log.empty:
     with st.expander("컬럼 자동 인식 결과 확인", expanded=False):
-        st.caption("인식이 잘못된 항목이 있으면 COLUMN_ALIASES에 해당 컬럼명을 추가하세요.")
+        st.caption("잘못 인식된 항목이 있으면 COLUMN_ALIASES 또는 NEGATIVE_WORDS를 수정하세요.")
         st.dataframe(mapping_log, hide_index=True)
 
 if detail.empty:
@@ -552,10 +541,12 @@ with tab1:
 
 with tab2:
     st.caption(f"총 {len(detail):,}건 · 파일 {len(source_files)}개")
-    st.dataframe(detail[DETAIL_COLS], hide_index=True, column_config={**money_cfg, **rate_cfg})
+    st.dataframe(detail[DETAIL_COLS], hide_index=True,
+                 column_config={**money_cfg, **rate_cfg})
 
 with tab3:
-    st.caption("순이익 = 매출액 − 수수료 − 배송비 − 기타비용 − 원가  /  마진율 = 순이익 ÷ 매출액 × 100")
+    st.caption("순이익 = 매출액 − 수수료 − 배송비 − 기타비용 − 원가  /  "
+               "마진율 = 순이익 ÷ 매출액 × 100")
     st.dataframe(
         detail[["플랫폼", "상품명", "매출액", "수수료", "배송비", "기타비용", "원가",
                 "순이익", "마진율(%)"]],
@@ -566,15 +557,16 @@ with tab3:
 # 다운로드
 # ----------------------------------------------------------------------
 section("Export")
-st.markdown(f'<div class="card"><div class="card-title">보고서 다운로드</div>'
-            f'<div style="color:{TEXT_SUB}; font-size:0.9rem; margin-bottom:14px;">'
-            f'종합요약 · 플랫폼별요약 · 마진계산내역 3개 시트로 구성된 엑셀 파일입니다.</div>',
-            unsafe_allow_html=True)
+st.markdown(
+    f'<div class="card"><div class="card-title">보고서 다운로드</div>'
+    f'<div style="color:{TEXT_SUB}; font-size:0.9rem; margin-bottom:14px;">'
+    f'종합요약 · 플랫폼별요약 · 마진계산내역 · 컬럼인식결과 시트로 구성된 엑셀 파일입니다.</div></div>',
+    unsafe_allow_html=True,
+)
 st.download_button(
     label="엑셀 보고서 다운로드 (.xlsx)",
-    data=build_excel(detail, summary, totals),
+    data=build_excel(detail, summary, totals, mapping_log),
     file_name=f"정산보고서_{pd.Timestamp.now():%Y%m%d_%H%M}.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     type="primary",
 )
-st.markdown("</div>", unsafe_allow_html=True)
